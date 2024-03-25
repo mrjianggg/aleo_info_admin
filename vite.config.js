@@ -62,19 +62,19 @@ export default ({
       // 如果使用docker-compose开发模式，设置为false
       open: true,
       port: process.env.VITE_CLI_PORT,
-      proxy: {
-        // 把key的路径代理到target位置
-        // detail: https://cli.vuejs.org/config/#devserver-proxy
-        '/api': { // 需要代理的路径   例如 '/api'
-          target: `https://demo.gin-vue-admin.com/`, // 代理到 目标路径
-          secure: true, // 接受运行在https上，默认不接受
-          changeOrigin: true, // 如果设置为true,那么本地会虚拟一个服务器接收你的请求并代你发送该请求，这样就不会有跨域问题（只适合开发环境）
-          // rewrite: path => path.replace(new RegExp('^' + process.env.VITE_BASE_API), ''),
-          // pathRewrite: { //重写路径 比如'/apis/aaa/ccc'重写为'/aaa/ccc'
-          //   '^/api': ''
-          // }
-        }
-      },
+      // proxy: {
+      //   // 把key的路径代理到target位置
+      //   // detail: https://cli.vuejs.org/config/#devserver-proxy
+      //   '/api': { // 需要代理的路径   例如 '/api'
+      //     target: `https://demo.gin-vue-admin.com/`, // 代理到 目标路径
+      //     secure: true, // 接受运行在https上，默认不接受
+      //     changeOrigin: true, // 如果设置为true,那么本地会虚拟一个服务器接收你的请求并代你发送该请求，这样就不会有跨域问题（只适合开发环境）
+      //     // rewrite: path => path.replace(new RegExp('^' + process.env.VITE_BASE_API), ''),
+      //     // pathRewrite: { //重写路径 比如'/apis/aaa/ccc'重写为'/aaa/ccc'
+      //     //   '^/api': ''
+      //     // }
+      //   }
+      // },
     },
     build: {
       minify: 'terser', // 是否进行压缩,boolean | 'terser' | 'esbuild',默认使用terser

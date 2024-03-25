@@ -5,7 +5,8 @@ import { emitter } from '@/utils/bus.js'
 import router from '@/router/index'
 
 const service = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API,
+  // baseURL: import.meta.env.VITE_BASE_API,
+  baseURL: 'https://api.aleo.info',
   timeout: 99999
 })
 let activeAxios = 0

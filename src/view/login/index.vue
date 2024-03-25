@@ -126,6 +126,7 @@ const checkPassword = (rule, value, callback) => {
 // 获取验证码
 const loginVerify = () => {
   captcha({}).then(async(ele) => {
+    console.log('captcha==',captcha);
     rules.captcha.push({
       max: ele.data.captchaLength,
       min: ele.data.captchaLength,
