@@ -17,11 +17,20 @@ export const login = (data) => {
 // @Router /base/captcha [post]
 export const captcha = (data) => {
   return service({
-    url: '/hashrate',
-    method: 'get',
+    url: '/base/captcha',
+    method: 'post',
     data: data
   })
 }
+
+// export const captcha = (data) => {
+//   return service({
+//     url: '/hashrate',
+//     method: 'get',
+//     data: data
+//   })
+// }
+
 
 // @Summary 用户注册
 // @Produce  application/json
