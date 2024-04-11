@@ -5,7 +5,7 @@ import service from '@/utils/request'
 // @Router /base/login [post]
 export const login = (data) => {
   return service({
-    url: '/base/login',
+    url: '/user/login',
     method: 'post',
     data: data
   })

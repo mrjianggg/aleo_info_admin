@@ -3,7 +3,7 @@
     <div class="aleo-table-box">
       <div class="flex justify-between items-center">
         <div class="aleo-btn-list">
-          <el-input v-model="seachVal" style="width: 240px" placeholder="请输入Dapp名称" />
+          <el-input v-model="seachVal" style="width: 240px" placeholder="Project Name" />
           <el-button type="primary" @click="seach">搜索</el-button>
         </div>
         <div class="aleo-btn-list">
@@ -15,8 +15,6 @@
         :data="tableData"
         row-key="id"
       >
-
-        <el-table-column min-width="60" label="序号" type="index" :index="indexMethod" />
 
         <el-table-column
           align="left"
@@ -32,7 +30,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column align="left" label="Dapp名称" min-width="150" prop="dappName"/>
+        <el-table-column align="left" label="Project Name" min-width="150" prop="projectName"/>
 
         <el-table-column
           align="left"
@@ -162,10 +160,10 @@
           <el-row>
             <el-col :span="24">
               <el-form-item
-                label="Dapp名称"
-                prop="dappName"
+                label="Project Name"
+                prop="projectName"
               >
-                <el-input v-model="itemInfo.dappName" />
+                <el-input v-model="itemInfo.projectName" />
               </el-form-item>
             </el-col>
 
@@ -196,7 +194,8 @@
                   style="--el-switch-on-color:#67C23A; --el-switch-off-color:#dedfe0;" 
                   v-model="itemInfo.hot" 
                   size="large"
-                  inline-prompt active-text="是" 
+                  inline-prompt 
+                  active-text="是" 
                   inactive-text="否"
                 />
               </el-form-item>
@@ -363,9 +362,6 @@ defineOptions({
 
 const path = ref(import.meta.env.VITE_BASE_API + '/')
 
-const indexMethod = (index) => {
-  return '#'+(index+1)
-}
 const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
@@ -389,7 +385,7 @@ const getTableData = async() => {
     {
       id: 1,
       logo: 'https://picsum.photos/200/200?1',
-      dappName: 'dappName1',
+      projectName: 'projectName1',
       dappType: 'Dex',
       introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
       status: true,
@@ -401,7 +397,7 @@ const getTableData = async() => {
     {
       id: 2,
       logo: 'https://picsum.photos/200/200?2',
-      dappName: 'dappName2',
+      projectName: 'projectName2',
       dappType: 'AI',
       introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
       status: true,
@@ -413,7 +409,7 @@ const getTableData = async() => {
     {
       id: 3,
       logo: 'https://picsum.photos/200/200?3',
-      dappName: 'dappName3',
+      projectName: 'projectName3',
       dappType: 'AI',
       introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
       status: false,
@@ -425,7 +421,7 @@ const getTableData = async() => {
     {
       id: 4,
       logo: 'https://picsum.photos/200/200?4',
-      dappName: 'dappName4',
+      projectName: 'projectName4',
       dappType: 'Game',
       introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
       status: true,
@@ -484,7 +480,7 @@ const deleteUserFunc = async(row) => {
 }
 
 const rules = ref({
-  dappName: [
+  projectName: [
     { required: true, message: '请输入名称', trigger: 'blur' },
     { min: 1, message: '最低1位字符', trigger: 'blur' }
   ],
@@ -599,7 +595,7 @@ const dialogFlag = ref('add')
 // 弹窗相关
 let itemInfo = ref({
   logo: '',
-  dappName: '',
+  projectName: '',
   dappType: '',
   introduction: '',
   status: true,
@@ -611,7 +607,7 @@ let itemInfo = ref({
 
 const addInfo = () => {
   itemInfo.value.logo = ''
-  itemInfo.value.dappName = ''
+  itemInfo.value.projectName = ''
   itemInfo.value.dappType = ''
   itemInfo.value.introduction = ''
   itemInfo.value.status = true

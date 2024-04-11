@@ -145,7 +145,7 @@ export const useRouterStore = defineStore('router', () => {
             "btns": null
         },
         {
-            "ID": 33,
+            "ID": 4,
             "CreatedAt": "2022-12-12T14:39:40.788+08:00",
             "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
             "parentId": "0",
@@ -164,7 +164,32 @@ export const useRouterStore = defineStore('router', () => {
             },
             "authoritys": null,
             "menuBtn": null,
-            "menuId": "33",
+            "menuId": "4",
+            "children": null,
+            "parameters": [],
+            "btns": null
+        },
+        {
+            "ID": 5,
+            "CreatedAt": "2022-12-12T14:39:40.788+08:00",
+            "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
+            "parentId": "0",
+            "path": "project",
+            "name": "project",
+            "hidden": false,
+            "component": "view/project/index.vue",
+            "sort": 5,
+            "meta": {
+                "activeName": "",
+                "keepAlive": false,
+                "defaultMenu": false,
+                "title": "Project审核",
+                "icon": "Stamp",
+                "closeTab": false
+            },
+            "authoritys": null,
+            "menuBtn": null,
+            "menuId": "5",
             "children": null,
             "parameters": [],
             "btns": null
