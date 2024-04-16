@@ -102,17 +102,6 @@ const checkPassword = (rule, value, callback) => {
 }
 
 
-
-
-// 测试接口
-// const testApi1 = () => {
-//   service({url: '/',method: 'get'}).then(async(res)=>{
-//     console.log('res===',res);
-//   })
-// }
-// testApi1()
-
-
 // 登录相关操作
 const loginForm = ref(null)
 const loginFormData = reactive({

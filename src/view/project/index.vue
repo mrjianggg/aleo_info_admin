@@ -3,108 +3,40 @@
     <div class="aleo-table-box">
       <div class="flex justify-between items-center">
         <div class="aleo-btn-list">
-          <el-input v-model="seachVal" style="width: 240px" placeholder="Project Name" />
-          <el-button type="primary" @click="seach">搜索</el-button>
+          <el-input v-model="seachVal" style="width: 240px" placeholder="请输入Project Name" />
         </div>
-        <div class="aleo-btn-list">
+        <!-- <div class="aleo-btn-list">
           <el-button type="primary" icon="plus" @click="addInfo">添加</el-button>
-          <el-button @click="addType" class="ml-2">分类管理</el-button>
-        </div>
+        </div> -->
       </div>
       <el-table
-        :data="tableData"
+        :data="filterBy(tableData,seachVal)"
         row-key="id"
       >
 
-        <el-table-column
-          align="left"
-          label="Logo"
-          min-width="200"
-        >
-          <template #default="scope">
-            <CustomPic
-              :width="200"
-              :picType="'img'"
-              :pic-src="scope.row.logo"
-            />
-          </template>
-        </el-table-column>
+        <el-table-column min-width="60" label="#" type="index" :index="indexMethod" />
 
-        <el-table-column align="left" label="Project Name" min-width="150" prop="projectName"/>
+        <el-table-column align="left" label="Project Name" prop="name"/>
 
         <el-table-column
           align="left"
-          label="类型"
-          width="100"
+          label="Website"
         >
           <template #default="scope">
-            <el-tag type="success">{{ scope.row.dappType }}</el-tag>
+            <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{ scope.row.website }}</div>
           </template>
         </el-table-column>
         
         <el-table-column
           align="left"
-          label="简介"
-          width="180"
+          label="提交时间"
         >
           <template #default="scope">
-            <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{ scope.row.introduction }}</div>
+            {{ formatTime(scope.row.createTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column
-          align="left"
-          label="状态"
-          width="100"
-        >
-          <template #default="scope">
-              <el-switch 
-                disabled
-                style="--el-switch-on-color:#67C23A; --el-switch-off-color:#dedfe0;" 
-                v-model="scope.row.status" 
-                size="large"
-                inline-prompt active-text="已上架" 
-                inactive-text="已下架"
-              />
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="left"
-          label="是否热门"
-          width="100"
-        >
-          <template #default="scope">
-              <el-switch 
-                disabled
-                style="--el-switch-on-color:#67C23A; --el-switch-off-color:#dedfe0;" 
-                v-model="scope.row.hot" 
-                size="large"
-                inline-prompt active-text="是" 
-                inactive-text="否"
-              />
-          </template>
-        </el-table-column>
-        
-        <el-table-column
-          align="left"
-          label="跳转链接"
-          width="180"
-        >
-          <template #default="scope">
-            <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{ scope.row.jumpLink }}</div>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          align="left"
-          label="更新时间"
-          width="180"
-        >
-          <template #default="scope">
-            {{ formatTime(scope.row.updateTime) }}
-          </template>
-        </el-table-column>
+        <el-table-column align="left" label="状态" prop="status"/>
 
         <el-table-column
           align="right"
@@ -114,11 +46,19 @@
         >
           <template #default="scope">
             <el-button
-              icon="edit"
+              v-if="scope.row.status === '待审核'"
+              icon="stamp"
               type="primary"
               link
               @click="openEdit(scope.row)"
-            >编辑</el-button>
+            >审核</el-button>
+            <el-button
+              v-else
+              icon=""
+              type="primary"
+              link
+              @click="openEdit(scope.row)"
+            >查看详情</el-button>
             <el-button
               icon="delete"
               type="danger"
@@ -127,25 +67,13 @@
             >删除</el-button>
           </template>
         </el-table-column>
-
       </el-table>
-      <div class="gva-pagination">
-        <el-pagination
-          :current-page="page"
-          :page-size="pageSize"
-          :page-sizes="[10, 30, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-        />
-      </div>
     </div>
 
     <el-dialog
       width="600"
       v-model="addInfoDialog"
-      :title="dialogFlag.value === 'add' ? '添加':'编辑'"
+      :title="itemInfo.status === '待审核' ? '审核':'查看详情'"
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
@@ -155,128 +83,80 @@
           ref="userForm"
           :rules="rules"
           :model="itemInfo"
-          label-width="100px"
+          label-width="120px"
         >
-          <el-row>
-            <el-col :span="24">
-              <el-form-item
-                label="Project Name"
-                prop="projectName"
-              >
-                <el-input v-model="itemInfo.projectName" />
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Project Name"
+              prop="name"
+            >
+              <el-input v-model="itemInfo.name" />
+            </el-form-item>
 
-            <el-col :span="24">
-              <el-form-item
-                label="简介"
-                prop="introduction"
-              >
-                <el-input v-model="itemInfo.introduction" />
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Category"
+              prop="name"
+            >
+              <el-input v-model="itemInfo.category" />
+            </el-form-item>
 
-            <el-col :span="24">
-              <el-form-item
-                label="跳转链接"
-                prop="jumpLink"
-              >
-                <el-input v-model="itemInfo.jumpLink" />
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Description"
+              prop="desc"
+            >
+              <!-- <el-input v-model="itemInfo.desc" /> -->
+              <el-input v-model="itemInfo.desc" type="textarea" />
+            </el-form-item>
 
-            <el-col :span="12">
-              <el-form-item
-                label="是否热门"
-                prop="hot"
-              >
-                <el-switch 
-                  style="--el-switch-on-color:#67C23A; --el-switch-off-color:#dedfe0;" 
-                  v-model="itemInfo.hot" 
-                  size="large"
-                  inline-prompt 
-                  active-text="是" 
-                  inactive-text="否"
-                />
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Twitter"
+              prop="twitter"
+            >
+              <el-input v-model="itemInfo.twitter" />
+            </el-form-item>
 
-            <el-col :span="12">
-              <el-form-item
-                label="状态"
-                prop="status"
-              >
-                <el-switch 
-                  style="--el-switch-on-color:#67C23A; --el-switch-off-color:#dedfe0;" 
-                  v-model="itemInfo.status" 
-                  size="large"
-                  inline-prompt active-text="已上架" 
-                  inactive-text="已下架"
-                />
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Website"
+              prop="website"
+            >
+              <el-input v-model="itemInfo.website" />
+            </el-form-item>
 
-            <el-col :span="12">
-              <el-form-item
-                label="类型"
-                prop="dappType"
-              >
-                <el-select v-model="itemInfo.dappType" placeholder="">
-                  <el-option
-                    v-for="item in typesData"
-                    :key="item"
-                    :label="item"
-                    :value="item"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Email"
+              prop="email"
+            >
+              <el-input v-model="itemInfo.email" />
+            </el-form-item>
 
-            <el-col :span="12">
-              <el-form-item
-                label="排序"
-                prop="sort"
-              >
-                <el-input-number
-                  v-model="itemInfo.sort"
-                  :min="1"
-                  :max="dialogFlag === 'add' ? (tableData.length+1):tableData.length"
-                  @change="handleChange"
-                />
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Telegram"
+            >
+              <el-input v-model="itemInfo.telegram" />
+            </el-form-item>
 
-            <el-col :span="24">
-              <el-form-item
-                label="Logo"
-                label-width="100px"
-                prop="logo"
-              >
-                <div
-                  style="display:inline-block"
-                  @click="openHeaderChange"
-                >
-                  <img
-                    v-if="itemInfo.logo"
-                    alt="Logo"
-                    class="header-img-box"
-                    :src="(itemInfo.logo && itemInfo.logo.slice(0, 4) !== 'http')?path+itemInfo.logo:itemInfo.logo"
-                  >
-                  <div
-                    v-else
-                    class="header-img-box"
-                  >从媒体库选择</div>
-                  <ChooseImg
-                    ref="chooseImg"
-                    :target="itemInfo"
-                    :target-key="`logo`"
-                  />
-                </div>
-              </el-form-item>
-            </el-col>
+            <el-form-item
+              label="Discord"
+            >
+              <el-input v-model="itemInfo.discord" />
+            </el-form-item>
 
-          </el-row>
+            <el-form-item
+              label="Github"
+            >
+              <el-input v-model="itemInfo.github" />
+            </el-form-item>
 
+            <el-form-item
+              label="Whitepaper"
+            >
+              <el-input v-model="itemInfo.whitepaper" />
+            </el-form-item>
+
+            <el-form-item
+              label="More"
+            >
+              <el-input v-model="itemInfo.more" />
+            </el-form-item>
 
         </el-form>
 
@@ -284,165 +164,43 @@
 
       <template #footer>
         <div class="dialog-footer">
+          <el-button type="primary" v-if="dialogFlag === 'add'" plain @click="enterAddUserDialog">确 定</el-button>
+          <el-button type="primary" v-if="itemInfo.status === '待审核'" plain @click="enterAddUserDialog('通过')">通 过</el-button>
+          <el-button type="danger" v-if="itemInfo.status === '待审核'" plain @click="enterAddUserDialog('拒绝')">拒 绝</el-button>
           <el-button @click="closeAddUserDialog">取 消</el-button>
-          <el-button
-            type="primary"
-            @click="enterAddUserDialog"
-          >确 定</el-button>
         </div>
       </template>
     </el-dialog>
 
-
-    <el-dialog
-      width="500"
-      v-model="addTypeDialog"
-      title="分类管理"
-      :show-close="false"
-      :close-on-press-escape="false"
-      :close-on-click-modal="false"
-    >
-      <div style="height:40vh;overflow:auto;padding:0 12px;">
-        <div class="flex gap-4">
-          <el-tag
-            v-for="tag in addTypes"
-            :key="tag"
-            closable
-            :disable-transitions="false"
-            @close="handleClose(tag)"
-          >
-            {{ tag }}
-          </el-tag>
-          <el-input
-            v-if="inputVisible"
-            ref="InputRef"
-            v-model="inputValue"
-            class="w-20"
-            size="small"
-            @keyup.enter="handleInputConfirm"
-            @blur="handleInputConfirm"
-          />
-          <el-button v-else class="button-new-tag" size="small" @click="showInput">
-            + New Tag
-          </el-button>
-        </div>
-      </div>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeAddTypeDialog">取 消</el-button>
-          <el-button
-            type="primary"
-            @click="enterAddTypeDialog"
-          >确 定</el-button>
-        </div>
-      </template>
-    </el-dialog>
 
   </div>
 </template>
 
 <script setup>
 import { formatTime } from '@/utils/date'
-import {
-  getUserList,
-  register,
-  deleteUser
-} from '@/api/user'
-import CustomPic from '@/components/customPic/index.vue'
-import ChooseImg from '@/components/chooseImg/index.vue'
-import { setUserInfo } from '@/api/user.js'
+import service from '@/utils/request'
 
 import { ref, watch, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 defineOptions({
-  name: 'Dapp',
+  name: 'Project',
 })
 
-const path = ref(import.meta.env.VITE_BASE_API + '/')
-
-const page = ref(1)
-const total = ref(0)
-const pageSize = ref(10)
+const indexMethod = (index) => {
+  return (index+1)
+}
 const tableData = ref([])
 // 分页
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  getTableData()
-}
-
-const handleCurrentChange = (val) => {
-  page.value = val
-  getTableData()
-}
 
 
 // 查询
 const getTableData = async() => {
-
-  tableData.value = [
-    {
-      id: 1,
-      logo: 'https://picsum.photos/200/200?1',
-      projectName: 'projectName1',
-      dappType: 'Dex',
-      introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
-      status: true,
-      hot: true,
-      updateTime: 1710385882,
-      sort: 1,
-      jumpLink: 'https://fanyi.baidu.com/mtpe-individual/multimodal#/'
-    },
-    {
-      id: 2,
-      logo: 'https://picsum.photos/200/200?2',
-      projectName: 'projectName2',
-      dappType: 'AI',
-      introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
-      status: true,
-      hot: false,
-      updateTime: 1704268511,
-      sort: 2,
-      jumpLink: 'https://fanyi.baidu.com/mtpe-individual/multimodal#/'
-    },
-    {
-      id: 3,
-      logo: 'https://picsum.photos/200/200?3',
-      projectName: 'projectName3',
-      dappType: 'AI',
-      introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
-      status: false,
-      hot: false,
-      updateTime: 1704268511,
-      sort: 3,
-      jumpLink: 'https://fanyi.baidu.com/mtpe-individual/multimodal#/'
-    },
-    {
-      id: 4,
-      logo: 'https://picsum.photos/200/200?4',
-      projectName: 'projectName4',
-      dappType: 'Game',
-      introduction: 'A privacy-centric decentralized exchange on @AleoHQ combining RFQ and AMM.',
-      status: true,
-      hot: false,
-      updateTime: 1704268511,
-      sort: 4,
-      jumpLink: 'https://fanyi.baidu.com/mtpe-individual/multimodal#/'
-    },
-  ]
-
-  total.value = 4;
-  page.value = 1;
-  pageSize.value = 10;
-
-  // const table = await getUserList({ page: page.value, pageSize: pageSize.value })
-  // if (table.code === 0) {
-  //   tableData.value = table.data.list
-  //   total.value = table.data.total
-  //   page.value = table.data.page
-  //   pageSize.value = table.data.pageSize
-  // }
+  service({url: '/project/list',method: 'get'}).then(async(res)=>{
+    if (res.code === 0) {
+      tableData.value = res.result
+    }
+  })
 }
 
 // watch(() => tableData.value, () => {
@@ -452,11 +210,14 @@ const getTableData = async() => {
 
 getTableData()
 
-const chooseImg = ref(null)
-const openHeaderChange = () => {
-  chooseImg.value.open()
+const filterBy = (curMiPageData,value)=>{
+  if(!curMiPageData){
+      curMiPageData = [];
+  }
+  return curMiPageData.filter(function(item){
+    return item.name.match(value);
+  })
 }
-
 
 const deleteUserFunc = async(row) => {
   ElMessageBox.confirm('此操作将删除该条数据, 是否继续?', '提示', {
@@ -465,67 +226,68 @@ const deleteUserFunc = async(row) => {
     type: 'warning'
   })
   .then(async() => {
-    const res = await deleteUser({ id: row.id })
-    if (res.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '删除成功!'
-      })
-      if (tableData.value.length === 1 && page.value > 1) {
-        page.value--
+    await service({url: `/project/${row._id}`,method: 'delete'}).then(async(res)=>{
+      if (res.code === 0) {
+        ElMessage({
+          type: 'success',
+          message: '删除成功!'
+        })
+        await getTableData()
       }
-      await getTableData()
-    }
+    })
   })
 }
 
 const rules = ref({
-  projectName: [
+  name: [
     { required: true, message: '请输入名称', trigger: 'blur' },
     { min: 1, message: '最低1位字符', trigger: 'blur' }
   ],
-  introduction: [
-    { required: true, message: '请输入简介', trigger: 'blur' }
+  category: [
+    { required: true, message: '请输入Category', trigger: 'blur' }
   ],
-  logo: [
-    { required: true, message: '请上传Logo', trigger: 'blur' }
+  desc: [
+    { required: true, message: '请输入Description', trigger: 'blur' }
   ],
-  dappType: [
-    { required: true, message: '请选择类型', trigger: 'blur' }
+  twitter: [
+    { required: true, message: '请输入Twitter', trigger: 'blur' }
   ],
-  jumpLink: [
-    { required: true, message: '请输入跳转链接', trigger: 'blur' }
+  website: [
+    { required: true, message: '请输入Website', trigger: 'blur' }
+  ],
+  email: [
+    { required: true, message: '请输入Email', trigger: 'blur' }
   ],
 })
 const userForm = ref(null)
-const enterAddUserDialog = async() => {
+const enterAddUserDialog = async(status) => {
   userForm.value.validate(async valid => {
     if (valid) {
-      const req = {
-        ...itemInfo.value
-      }
       if (dialogFlag.value === 'add') {
-        const res = await register(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '创建成功' })
-          await getTableData()
-          closeAddUserDialog()
-        }
+        itemInfo.value.status = '待审核';
+        service({url: '/project/add',method: 'post',data:itemInfo.value}).then(async(res)=>{
+          if (res.code === 0) {
+            ElMessage({ type: 'success', message: '创建成功' })
+            await getTableData()
+            closeAddUserDialog()
+          }
+        })
       }
       if (dialogFlag.value === 'edit') {
-        const res = await setUserInfo(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeAddUserDialog()
+        let info = {
+          ...itemInfo.value,
+          status
         }
+        service({url: `/project/${itemInfo.value._id}`,method: 'put',data:info}).then(async(res)=>{
+          if (res.code === 0) {
+            ElMessage({ type: 'success', message: '编辑成功' })
+            await getTableData()
+            closeAddUserDialog()
+          }
+        })
       }
     }
   })
-}
-
-const handleChange = ()=>{
-
 }
 
 const seachVal = ref('')
@@ -536,30 +298,7 @@ const seach = ()=>{
 
 const typesData = ref()
 const addTypes = ref([])
-const addTypeDialog = ref(false)
 
-const getTypeData = async()=>{
-  typesData.value = ['Dex','Ai','Game','Wallet'];
-}
-getTypeData()
-const closeAddTypeDialog = () => {
-  addTypeDialog.value = false
-}
-const addType = () => {
-  addTypes.value = JSON.parse(JSON.stringify(typesData.value))
-  console.log('addTypes===',addTypes);
-  addTypeDialog.value = true
-}
-const enterAddTypeDialog = async() => {
-  console.log('addTypes===',addTypes);
-  closeAddTypeDialog()
-  // const res = await setUserInfo(req)
-  // if (res.code === 0) {
-  //   ElMessage({ type: 'success', message: '操作成功' })
-  //   await getTypeData()
-  //   closeAddTypeDialog()
-  // }
-}
 
 const inputValue = ref('')
 const inputVisible = ref(false)
@@ -594,26 +333,32 @@ const dialogFlag = ref('add')
 
 // 弹窗相关
 let itemInfo = ref({
-  logo: '',
-  projectName: '',
-  dappType: '',
-  introduction: '',
-  status: true,
-  hot: false,
-  updateTime: '',
-  sort: null,
-  jumpLink: ''
+  name: '',
+  category: '',
+  desc: '',
+  twitter: '',
+  website: '',
+  email: '',
+  telegram: '',
+  discord: '',
+  github: '',
+  whitepaper: '',
+  more: '',
 })
 
 const addInfo = () => {
-  itemInfo.value.logo = ''
-  itemInfo.value.projectName = ''
-  itemInfo.value.dappType = ''
-  itemInfo.value.introduction = ''
-  itemInfo.value.status = true
-  itemInfo.value.hot = true
-  itemInfo.value.sort = tableData.value.length + 1;
-  itemInfo.value.jumpLink = ''
+  itemInfo.value.name = ''
+  itemInfo.value.category = ''
+  itemInfo.value.desc = ''
+  itemInfo.value.twitter = ''
+  itemInfo.value.website = ''
+  itemInfo.value.email = ''
+  itemInfo.value.telegram = ''
+  itemInfo.value.discord = ''
+  itemInfo.value.github = ''
+  itemInfo.value.whitepaper = ''
+  itemInfo.value.more = ''
+
   dialogFlag.value = 'add'
   addInfoDialog.value = true
 }

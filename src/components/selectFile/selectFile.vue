@@ -51,7 +51,6 @@ const fileList = ref(props.modelValue)
 const emits = defineEmits(['update:modelValue'])
 
 watch(fileList.value, (val) => {
-  console.log(val)
   emits('update:modelValue', val)
 })
 

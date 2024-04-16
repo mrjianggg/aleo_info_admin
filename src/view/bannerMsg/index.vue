@@ -2,27 +2,23 @@
   <div>
     <div class="aleo-table-box">
       <div class="aleo-btn-list">
-        <el-button type="primary" icon="plus" @click="addUser">添加</el-button>
+        <el-button type="primary" icon="plus" @click="addInfo">添加</el-button>
         <el-button @click="openDrag" icon="Sort" class=" ml-2">排序</el-button>
       </div>
       <el-table
         :data="tableData"
-        row-key="ID"
+        row-key="_id"
       >
         
         <el-table-column min-width="60" label="顺序" type="index" :index="indexMethod" />
-        <el-table-column align="left" label="Banner名称" min-width="150" prop="userName"/>
+        <el-table-column align="left" label="Banner名称" min-width="150" prop="name"/>
         <el-table-column
           align="left"
           label="PC图"
           min-width="200"
         >
           <template #default="scope">
-            <CustomPic
-              :width="200"
-              :picType="'img'"
-              :pic-src="scope.row.headerImg"
-            />
+            <el-image class="w-52 h-52" :src="scope.row.img" :preview-src-list="[scope.row.img]" hide-on-click-modal preview-teleported :fit="'scale-down'" />
           </template>
         </el-table-column>
         <el-table-column
@@ -31,25 +27,25 @@
           min-width="200"
         >
           <template #default="scope">
-            <CustomPic
-              :width="200"
-              :picType="'img'"
-              :pic-src="scope.row.headerImg"
-            />
+            <el-image class="w-52 h-52" :src="scope.row.imgMobile" :preview-src-list="[scope.row.imgMobile]" hide-on-click-modal preview-teleported :fit="'scale-down'" />
           </template>
         </el-table-column>
         <el-table-column
           align="left"
           label="链接"
           min-width="150"
-          prop="nickName"
+          prop="url"
         />
+
         <el-table-column
           align="left"
           label="更新时间"
-          min-width="180"
-          prop="phone"
-        />
+          width="180"
+        >
+          <template #default="scope">
+            {{ formatTime(scope.row.updateTime) }}
+          </template>
+        </el-table-column>
 
         <el-table-column
           align="left"
@@ -75,21 +71,11 @@
         </el-table-column>
 
       </el-table>
-      <div class="gva-pagination">
-        <el-pagination
-          :current-page="page"
-          :page-size="pageSize"
-          :page-sizes="[10, 30, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-        />
-      </div>
+
     </div>
     <el-dialog
-      v-model="addUserDialog"
-      title="用户"
+      v-model="addInfoDialog"
+      :title="dialogFlag === 'add' ?'添加':'编辑'"
       :show-close="false"
       :close-on-press-escape="false"
       :close-on-click-modal="false"
@@ -98,51 +84,42 @@
         <el-form
           ref="userForm"
           :rules="rules"
-          :model="dataList"
+          :model="itemInfo"
           label-width="100px"
         >
           <el-form-item
             label="Banner名称"
-            prop="userName"
+            prop="name"
           >
-            <el-input v-model="dataList.userName" />
+            <el-input v-model="itemInfo.name" />
           </el-form-item>
 
           <el-form-item
             label="链接"
-            prop="nickName"
+            prop="url"
           >
-            <el-input v-model="dataList.nickName" />
+            <el-input v-model="itemInfo.url" />
           </el-form-item>
 
           <el-form-item
             label="PC图"
             label-width="100px"
-            prop="headerImg"
+            prop="img"
           >
-            <div
-              style="display:inline-block"
-              @click="openHeaderChange"
-            >
-              <img
-                v-if="dataList.headerImg"
-                alt="PC图"
-                class="header-img-box"
-                :src="(dataList.headerImg && dataList.headerImg.slice(0, 4) !== 'http')?path+dataList.headerImg:dataList.headerImg"
-              >
-              <div
-                v-else
-                class="header-img-box"
-              >从媒体库选择</div>
-              <ChooseImg
-                ref="chooseImg"
-                :target="dataList"
-                :target-key="`headerImg`"
-              />
-            </div>
+            <UploadImg @fn="(url)=>{itemInfo.img = url}" :url="itemInfo.img" />
           </el-form-item>
 
+          <el-form-item
+            label="移动端图"
+            label-width="100px"
+          >
+            <UploadImg @fn="(url)=>{itemInfo.imgMobile = url}" :url="itemInfo.imgMobile" />
+          </el-form-item>
+
+
         </el-form>
+
+        
 
       </div>
 
@@ -158,59 +135,40 @@
     </el-dialog>
 
 
-    <Drag ref="dragEl" @childEvent="childEvent" :data="tableData" :id="'ID'" :showImg="'headerImg'" />
+    <Drag ref="dragEl" @childEvent="childEvent" :data="tableData" :id="'_id'" :showImg="'img'" />
   </div>
 </template>
 
 <script setup>
 
-import {
-  getUserList,
-  register,
-  deleteUser
-} from '@/api/user'
+import { formatTime } from '@/utils/date'
+import service from '@/utils/request'
 import Drag from '@/components/drag/index.vue' 
-import CustomPic from '@/components/customPic/index.vue'
-import ChooseImg from '@/components/chooseImg/index.vue'
-import { setUserInfo } from '@/api/user.js'
+import UploadImg from '@/components/upload/uploadImg.vue'
 
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 defineOptions({
   name: 'Banner',
 })
 
-const path = ref(import.meta.env.VITE_BASE_API + '/')
-
 const indexMethod = (index) => {
   return '#'+(index+1)
 }
-const page = ref(1)
-const total = ref(0)
-const pageSize = ref(10)
 const tableData = ref([])
-// 分页
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  getTableData()
-}
 
-const handleCurrentChange = (val) => {
-  page.value = val
-  getTableData()
-}
 
 // 查询
 const getTableData = async() => {
-  const table = await getUserList({ page: page.value, pageSize: pageSize.value })
-  if (table.code === 0) {
-    tableData.value = table.data.list
-    total.value = table.data.total
-    page.value = table.data.page
-    pageSize.value = table.data.pageSize
-  }
+  service({url: '/banner/list',method: 'get'}).then(async(res)=>{
+    if (res.code === 0) {
+      tableData.value = res.result
+    }
+  })
 }
+
+
 
 // watch(() => tableData.value, () => {
 //   setAuthorityIds()
@@ -219,16 +177,26 @@ const getTableData = async() => {
 
 getTableData()
 
-const chooseImg = ref(null)
-const openHeaderChange = () => {
-  chooseImg.value.open()
-}
+const dragEl = ref(null)
 
 const childEvent = (val)=>{
-  console.log('childEvent===',val);
+  const result = val.map((item,index) => {
+    return {
+      rank: index+1,
+      _id: item._id
+    }
+  });
+  
+  service({url: '/banner/resetRank',method: 'post',data:result}).then(async(res)=>{
+    if (res.code === 0) {
+      ElMessage({ type: 'success', message: '操作成功' })
+      dragEl.value.cancel()
+      await getTableData()
+    }
+  })
 }
 
-const dragEl = ref(null)
+
 const openDrag = () => {
   dragEl.value.open()
 }
@@ -241,36 +209,35 @@ const deleteUserFunc = async(row) => {
     type: 'warning'
   })
   .then(async() => {
-    const res = await deleteUser({ id: row.ID })
-    if (res.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '删除成功!'
-      })
-      if (tableData.value.length === 1 && page.value > 1) {
-        page.value--
+    await service({url: `/banner/${row._id}`,method: 'delete'}).then(async(res)=>{
+      if (res.code === 0) {
+        ElMessage({
+          type: 'success',
+          message: '删除成功!'
+        })
+        await getTableData()
       }
-      await getTableData()
-    }
+    })
   })
 }
 
 // 弹窗相关
-let dataList = ref({
-  userName: '',
-  nickName: '',
-  headerImg: ''
+let itemInfo = ref({
+  name: '',
+  url: '',
+  img: '',
+  imgMobile: ''
 })
 
 const rules = ref({
-  userName: [
+  name: [
     { required: true, message: '请输入Banner名称', trigger: 'blur' },
     { min: 1, message: '最低1位字符', trigger: 'blur' }
   ],
-  nickName: [
+  url: [
     { required: true, message: '请输入链接', trigger: 'blur' }
   ],
-  headerImg: [
+  img: [
     { required: true, message: '请上传PC图', trigger: 'blur' }
   ],
 })
@@ -278,51 +245,52 @@ const userForm = ref(null)
 const enterAddUserDialog = async() => {
   userForm.value.validate(async valid => {
     if (valid) {
-      const req = {
-        ...dataList.value
-      }
       if (dialogFlag.value === 'add') {
-        const res = await register(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '创建成功' })
-          await getTableData()
-          closeAddUserDialog()
-        }
+        service({url: '/banner/add',method: 'post',data:itemInfo.value}).then(async(res)=>{
+          if (res.code === 0) {
+            ElMessage({ type: 'success', message: '创建成功' })
+            await getTableData()
+            closeAddUserDialog()
+          }
+        })
+
       }
       if (dialogFlag.value === 'edit') {
-        const res = await setUserInfo(req)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeAddUserDialog()
-        }
+        service({url: `/banner/${itemInfo.value._id}`,method: 'put',data:itemInfo.value}).then(async(res)=>{
+          if (res.code === 0) {
+            ElMessage({ type: 'success', message: '编辑成功' })
+            await getTableData()
+            closeAddUserDialog()
+          }
+        })
       }
     }
   })
 }
 
-const addUserDialog = ref(false)
+const addInfoDialog = ref(false)
 const closeAddUserDialog = () => {
   userForm.value.resetFields()
-  dataList.value = {}
-  addUserDialog.value = false
+  itemInfo.value = {}
+  addInfoDialog.value = false
 }
 
 const dialogFlag = ref('add')
 
-const addUser = () => {
-  dataList.value.userName = ''
-  dataList.value.nickName = ''
-  dataList.value.headerImg = ''
+const addInfo = () => {
+  itemInfo.value.name = ''
+  itemInfo.value.url = ''
+  itemInfo.value.img = ''
+  itemInfo.value.imgMobile = ''
   dialogFlag.value = 'add'
-  addUserDialog.value = true
+  addInfoDialog.value = true
 }
 
 
 const openEdit = (row) => {
   dialogFlag.value = 'edit'
-  dataList.value = JSON.parse(JSON.stringify(row))
-  addUserDialog.value = true
+  itemInfo.value = JSON.parse(JSON.stringify(row))
+  addInfoDialog.value = true
 }
 
 </script>

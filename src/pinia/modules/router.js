@@ -195,78 +195,27 @@ export const useRouterStore = defineStore('router', () => {
             "btns": null
         },
         {
-            "ID": 12,
+            "ID": 6,
             "CreatedAt": "2022-12-12T14:39:40.788+08:00",
             "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
             "parentId": "0",
-            "path": "example",
-            "name": "example",
+            "path": "test",
+            "name": "test",
             "hidden": false,
-            "component": "view/example/index.vue",
-            "sort": 7,
+            "component": "view/test.vue",
+            "sort": 6,
             "meta": {
                 "activeName": "",
                 "keepAlive": false,
                 "defaultMenu": false,
-                "title": "示例文件",
-                "icon": "management",
+                "title": "test",
+                "icon": "HelpFilled",
                 "closeTab": false
             },
             "authoritys": null,
             "menuBtn": null,
-            "menuId": "12",
-            "children": [
-                {
-                    "ID": 13,
-                    "CreatedAt": "2022-12-12T14:39:40.788+08:00",
-                    "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
-                    "parentId": "12",
-                    "path": "upload",
-                    "name": "upload",
-                    "hidden": false,
-                    "component": "view/example/upload/upload.vue",
-                    "sort": 5,
-                    "meta": {
-                        "activeName": "",
-                        "keepAlive": false,
-                        "defaultMenu": false,
-                        "title": "媒体库（上传下载）",
-                        "icon": "upload",
-                        "closeTab": false
-                    },
-                    "authoritys": null,
-                    "menuBtn": null,
-                    "menuId": "13",
-                    "children": null,
-                    "parameters": [],
-                    "btns": null
-                },
-                {
-                    "ID": 14,
-                    "CreatedAt": "2022-12-12T14:39:40.788+08:00",
-                    "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
-                    "parentId": "12",
-                    "path": "breakpoint",
-                    "name": "breakpoint",
-                    "hidden": false,
-                    "component": "view/example/breakpoint/breakpoint.vue",
-                    "sort": 6,
-                    "meta": {
-                        "activeName": "",
-                        "keepAlive": false,
-                        "defaultMenu": false,
-                        "title": "断点续传",
-                        "icon": "upload-filled",
-                        "closeTab": false
-                    },
-                    "authoritys": null,
-                    "menuBtn": null,
-                    "menuId": "14",
-                    "children": null,
-                    "parameters": [],
-                    "btns": null
-                },
-            ],
+            "menuId": "2",
+            "children": null,
             "parameters": [],
             "btns": null
         }
@@ -289,7 +238,6 @@ export const useRouterStore = defineStore('router', () => {
     asyncRouterHandle(baseRouter)
     KeepAliveFilter(asyncRouter)
     asyncRouters.value = baseRouter
-    console.log('asyncRouters===',asyncRouters);
     return true
   }
 

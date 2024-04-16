@@ -7,7 +7,6 @@ export const asyncRouterHandle = (asyncRouter) => {
     if (item.component && typeof item.component === 'string') {
       if (item.component.split('/')[0] === 'view') {
         item.component = dynamicImport(viewModules, item.component)
-        // console.log('item.component===',item.component);
       } else if (item.component.split('/')[0] === 'plugin') {
         item.component = dynamicImport(pluginModules, item.component)
       }

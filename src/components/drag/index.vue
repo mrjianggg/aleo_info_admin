@@ -19,7 +19,8 @@
           @dragend="dragend"
           @dragover="dragover"
         >
-          <img :src="item[props.showImg]" style="height: 180px;width:auto" />
+          <el-tag type="primary" class="absolute">{{ item.name }}</el-tag>
+          <img :src="item[props.showImg]" style="height: 140px;width:auto" />
           <!-- {{ item[props.showImg] }} -->
         </div>
       </TransitionGroup>
@@ -103,14 +104,15 @@ const open = () =>{
   dialogVisible.value = true;
 }
 
-defineExpose({ open })
+defineExpose({ open,cancel })
 </script>
 
 <style lang="scss" scoped>
 .item {
+  position: relative;
 	width: 100%;
-	height: 180px;
-	line-height: 200px;
+	height: 140px;
+	line-height: 140px;
 	// background-color: #f5f6f8;
 	background-color: rgb(249, 249, 249);
 	text-align: center;
