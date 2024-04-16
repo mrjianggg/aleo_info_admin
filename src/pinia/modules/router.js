@@ -194,31 +194,31 @@ export const useRouterStore = defineStore('router', () => {
             "parameters": [],
             "btns": null
         },
-        {
-            "ID": 6,
-            "CreatedAt": "2022-12-12T14:39:40.788+08:00",
-            "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
-            "parentId": "0",
-            "path": "test",
-            "name": "test",
-            "hidden": false,
-            "component": "view/test.vue",
-            "sort": 6,
-            "meta": {
-                "activeName": "",
-                "keepAlive": false,
-                "defaultMenu": false,
-                "title": "test",
-                "icon": "HelpFilled",
-                "closeTab": false
-            },
-            "authoritys": null,
-            "menuBtn": null,
-            "menuId": "2",
-            "children": null,
-            "parameters": [],
-            "btns": null
-        }
+        // {
+        //     "ID": 6,
+        //     "CreatedAt": "2022-12-12T14:39:40.788+08:00",
+        //     "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
+        //     "parentId": "0",
+        //     "path": "test",
+        //     "name": "test",
+        //     "hidden": false,
+        //     "component": "view/test.vue",
+        //     "sort": 6,
+        //     "meta": {
+        //         "activeName": "",
+        //         "keepAlive": false,
+        //         "defaultMenu": false,
+        //         "title": "test",
+        //         "icon": "HelpFilled",
+        //         "closeTab": false
+        //     },
+        //     "authoritys": null,
+        //     "menuBtn": null,
+        //     "menuId": "2",
+        //     "children": null,
+        //     "parameters": [],
+        //     "btns": null
+        // }
     ]
     asyncRouter && asyncRouter.push({
       path: 'reload',
