@@ -105,8 +105,10 @@ const checkPassword = (rule, value, callback) => {
 // 登录相关操作
 const loginForm = ref(null)
 const loginFormData = reactive({
-  username: 'admin',
-  password: 'admin123456*',
+  username: '',
+  password: '',
+  // username: 'admin',
+  // password: 'admin123456*',
 })
 const rules = reactive({
   username: [{ validator: checkUsername, trigger: 'blur' }],

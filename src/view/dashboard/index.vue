@@ -78,6 +78,13 @@ const toolCards = ref([
     name: 'info',
     color: '#b37feb',
     bg: 'rgba(179, 127, 235,.3)'
+  },
+  {
+    label: 'Project审核',
+    icon: 'Stamp',
+    name: 'project',
+    color: '#ffd666',
+    bg: 'rgba(255, 214, 102,.3)'
   }
 ])
 

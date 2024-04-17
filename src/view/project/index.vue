@@ -59,12 +59,12 @@
               link
               @click="openEdit(scope.row)"
             >查看详情</el-button>
-            <el-button
+            <!-- <el-button
               icon="delete"
               type="danger"
               link
               @click="deleteUserFunc(scope.row)"
-            >删除</el-button>
+            >删除</el-button> -->
           </template>
         </el-table-column>
       </el-table>
