@@ -168,12 +168,15 @@ export const useUserStore = defineStore('user', () => {
   }
   /* 登出*/
   const LoginOut = async() => {
-    const res = await jsonInBlacklist()
-    if (res.code === 0) {
-      await ClearStorage()
-      router.push({ name: 'Login', replace: true })
-      window.location.reload()
-    }
+    ClearStorage()
+    router.push({ name: 'Login', replace: true })
+    window.location.reload()
+    // const res = await jsonInBlacklist()
+    // if (res.code === 0) {
+    //   await ClearStorage()
+    //   router.push({ name: 'Login', replace: true })
+    //   window.location.reload()
+    // }
   }
   /* 清理数据 */
   const ClearStorage = async() => {
