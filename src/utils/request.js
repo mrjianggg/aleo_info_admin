@@ -40,7 +40,7 @@ service.interceptors.request.use(
     const userStore = useUserStore()
     config.headers = {
       'Content-Type': 'application/json',
-      'x-token': userStore.token,
+      'Authorization': 'Bearer ' + userStore.token,
       'x-user-id': userStore.userInfo.ID,
       ...config.headers
     }
@@ -62,6 +62,7 @@ service.interceptors.request.use(
 // http response 拦截器
 service.interceptors.response.use(
   response => {
+    console.log('response===',response);
     const userStore = useUserStore()
     if (!response.config.donNotShowLoading) {
       closeLoading()
@@ -89,6 +90,8 @@ service.interceptors.response.use(
     }
   },
   error => {
+    const userStore = useUserStore()
+    console.log('error===',error);
     if (!error.config.donNotShowLoading) {
       closeLoading()
     }
@@ -112,6 +115,14 @@ service.interceptors.response.use(
     }
 
     switch (error.response.status) {
+      case 401:
+        ElMessage({
+          showClose: true,
+          message: '登录已失效请重新登录',
+          type: 'error'
+        })
+        userStore.LoginOut()
+        break
       case 500:
         ElMessage({
           showClose: true,

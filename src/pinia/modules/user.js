@@ -89,7 +89,7 @@ export const useUserStore = defineStore('user', () => {
     baseColor: '#fff'
   })
   
-  const token = ref(window.localStorage.getItem('token') || cookie.get('x-token') || '')
+  const token = ref(window.localStorage.getItem('token') || cookie.get('token') || '')
   const setUserInfo = (val) => {
     userInfo.value = val
   }
@@ -130,9 +130,9 @@ export const useUserStore = defineStore('user', () => {
       text: '登录中，请稍候...',
     })
     try {
-      await service({ url: '/user/login', method: 'post', data: loginInfo }).then(async res=>{
+      await service({ url: '/auth/login', method: 'post', data: loginInfo }).then(async res=>{
         if (res.code === 0) {
-
+          console.log('res===--',res);
           setUserInfo(UserInfo)
           setToken(res.result.token)
           const routerStore = useRouterStore()
@@ -183,7 +183,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = ''
     sessionStorage.clear()
     localStorage.clear()
-    cookie.remove('x-token')
+    cookie.remove('token')
   }
   /* 设置侧边栏模式*/
   const changeSideMode = async(data) => {
