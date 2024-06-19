@@ -194,6 +194,31 @@ export const useRouterStore = defineStore('router', () => {
             "parameters": [],
             "btns": null
         },
+        {
+            "ID": 6,
+            "CreatedAt": "2022-12-12T14:39:40.788+08:00",
+            "UpdatedAt": "2022-12-12T14:39:40.788+08:00",
+            "parentId": "0",
+            "path": "charts",
+            "name": "charts",
+            "hidden": false,
+            "component": "view/charts/index.vue",
+            "sort": 6,
+            "meta": {
+                "activeName": "",
+                "keepAlive": false,
+                "defaultMenu": false,
+                "title": "数据统计",
+                "icon": "TrendCharts",
+                "closeTab": false
+            },
+            "authoritys": null,
+            "menuBtn": null,
+            "menuId": "6",
+            "children": null,
+            "parameters": [],
+            "btns": null
+        },
         // {
         //     "ID": 6,
         //     "CreatedAt": "2022-12-12T14:39:40.788+08:00",
