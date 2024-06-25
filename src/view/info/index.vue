@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref } from 'vue'
 import service from '@/utils/request'
 defineOptions({
